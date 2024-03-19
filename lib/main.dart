@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,31 +25,48 @@ class MyApp extends StatelessWidget {
 }
 
 class Contact {
+  final String id = const Uuid().v4();
   final String name;
 
-  const Contact({required this.name});
+  Contact({required this.name});
 }
 
-class ContactBook {
-  ContactBook._sharedInstance();
+// class Contact {
+//   final String id;
+//   final String name;
+
+//   Contact({required this.name}) : id = const Uuid().v4();
+// }
+
+class ContactBook extends ValueNotifier<List<Contact>> {
+  ContactBook._sharedInstance() : super([Contact(name: "ffff")]);
   static final ContactBook _shared = ContactBook._sharedInstance();
   factory ContactBook() => _shared;
 
-  final List<Contact> _contacts = [
-    const Contact(name: 'Foo bar')
-  ];
-
-  int get length => _contacts.length;
+  int get length => value.length;
 
   void add({ required Contact contact }) {
-    _contacts.add(contact);
+    // final contacts = [...value];
+    // contacts.add(contact);
+    // value = contacts;
+
+    value.add(contact);
+    notifyListeners();
   }
 
   void remove({ required Contact contact }) {
-    _contacts.remove(contact);
+    // _contacts.remove(contact);
+    if (value.contains(contact)) {
+      // final contacts = [...value];
+      // contacts.remove(contact);
+      // value = contacts;
+
+      value.remove(contact);
+      notifyListeners();
+    }
   }
 
-  Contact? contact({required int atIndex}) => _contacts.length > atIndex ? _contacts[atIndex] : null;
+  Contact? contact({required int atIndex}) => value.length > atIndex ? value[atIndex] : null;
 }
 
 class HomePage extends StatelessWidget {
@@ -56,20 +74,41 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contactBook = ContactBook();
+    // final contactBook = ContactBook();
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
         backgroundColor: Colors.blue,
       ),
-      body: ListView.builder(
-        itemCount: contactBook.length,
-        itemBuilder: (context, index) {
-          final contact = contactBook.contact(atIndex: index)!;
+      body: ValueListenableBuilder(
+        valueListenable: ContactBook(),
+        builder:(context, value, child) {
+          final contacts = value;
 
-          return ListTile(
-            title: Text(contact.name),
+          return ListView.builder(
+            itemCount: contacts.length,
+            itemBuilder: (context, index) {
+              final contact = contacts[index];
+
+              return Dismissible(
+                key: ValueKey(contact.id),
+                onDismissed: (direction) {
+                  // contacts.remove(contact);
+                  ContactBook().remove(contact: contact);
+                },
+                child: Material(
+                  color: Colors.white,
+                  elevation: 6,
+                  child: ListTile(
+                    title: Text(contact.name),
+                  ),
+                )
+              );
+              // return ListTile(
+              //   title: Text(contact.name),
+              // );
+            },
           );
         },
       ),
