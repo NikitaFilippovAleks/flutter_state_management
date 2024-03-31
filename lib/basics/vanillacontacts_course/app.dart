@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       ),
       home: const HomePage(),
       routes: {
-        '/new-contact':(context) => const NewContactView()
+        '/new-contact':(context) => const NewContactView(),
       },
     );
   }
@@ -35,7 +35,7 @@ class Contact {
 // }
 
 class ContactBook extends ValueNotifier<List<Contact>> {
-  ContactBook._sharedInstance() : super([Contact(name: "ffff")]);
+  ContactBook._sharedInstance() : super([Contact(name: 'ffff')]);
   static final ContactBook _shared = ContactBook._sharedInstance();
   factory ContactBook() => _shared;
 
