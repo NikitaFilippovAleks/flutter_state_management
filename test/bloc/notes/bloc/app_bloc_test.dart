@@ -9,6 +9,7 @@ import 'package:vanillacontacts_course/bloc/notes/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
+
 const Iterable<Note> mockNotes = [
   Note(title: 'Note 1'),
   Note(title: 'Note 2'),
